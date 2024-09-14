@@ -1,7 +1,13 @@
 package org.example;
 
 public enum ProductType {
-    ELECTRONIC,
-    LIBRARY,
-    OTHERS
+    ELECTRONIC("Electronic"),
+    LIBRARY("Library"),
+    OTHERS("Others");
+
+    public final String label;
+
+    private ProductType(String label) {
+        this.label = label;
+    }
 }

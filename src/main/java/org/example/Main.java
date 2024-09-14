@@ -1,5 +1,6 @@
 package org.example;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,25 +12,25 @@ public class Main {
         Map<Long, Product> products = new HashMap<>();
 
 
-        products.put(1L, new Product(1L, "Smartphone", "Smartphone Samsung Galaxy S21", 1200.0, ProductType.ELECTRONIC));
-        products.put(2L, new Product(2L, "Laptop", "Laptop Dell Inspiron 15", 2500.0, ProductType.ELECTRONIC));
-        products.put(3L, new Product(3L, "Tablet", "Tablet Apple iPad Air", 1800.0, ProductType.ELECTRONIC));
-        products.put(4L, new Product(4L, "Smartwatch", "Smartwatch Apple Watch Series 6", 1500.0, ProductType.ELECTRONIC));
-        products.put(5L, new Product(5L, "Headphones", "Auriculares Sony WH-1000XM4", 350.0, ProductType.ELECTRONIC));
+        products.put(1L, new Product(1L, "Smartphone", "Smartphone Samsung Galaxy S21", new BigDecimal(1200), ProductType.ELECTRONIC));
+        products.put(2L, new Product(2L, "Laptop", "Laptop Dell Inspiron 15", new BigDecimal(2500), ProductType.ELECTRONIC));
+        products.put(3L, new Product(3L, "Tablet", "Tablet Apple iPad Air", new BigDecimal(1800), ProductType.ELECTRONIC));
+        products.put(4L, new Product(4L, "Smartwatch", "Smartwatch Apple Watch Series 6", new BigDecimal(1500), ProductType.ELECTRONIC));
+        products.put(5L, new Product(5L, "Headphones", "Auriculares Sony WH-1000XM4", new BigDecimal(350), ProductType.ELECTRONIC));
 
 
-        products.put(6L, new Product(6L, "Libro de Java", "Java: A Beginner's Guide", 45.0, ProductType.LIBRARY));
-        products.put(7L, new Product(7L, "Diccionario Inglés-Español", "Oxford English-Spanish Dictionary", 60.0, ProductType.LIBRARY));
-        products.put(8L, new Product(8L, "Revista de Ciencia", "National Geographic - Edición Especial", 30.0, ProductType.LIBRARY));
-        products.put(9L, new Product(9L, "Enciclopedia", "Enciclopedia Británica - Volumen 1", 102.0, ProductType.LIBRARY));
-        products.put(10L, new Product(10L, "Libro de Programación", "Clean Code: A Handbook of Agile Software Craftsmanship", 105.0, ProductType.LIBRARY));
+        products.put(6L, new Product(6L, "Libro de Java", "Java: A Beginner's Guide", new BigDecimal(45), ProductType.LIBRARY));
+        products.put(7L, new Product(7L, "Diccionario Inglés-Español", "Oxford English-Spanish Dictionary", new BigDecimal(60), ProductType.LIBRARY));
+        products.put(8L, new Product(8L, "Revista de Ciencia", "National Geographic - Edición Especial", new BigDecimal(30), ProductType.LIBRARY));
+        products.put(9L, new Product(9L, "Enciclopedia", "Enciclopedia Británica - Volumen 1", new BigDecimal(102), ProductType.LIBRARY));
+        products.put(10L, new Product(10L, "Libro de Programación", "Clean Code: A Handbook of Agile Software Craftsmanship", new BigDecimal(105), ProductType.LIBRARY));
 
 
-        products.put(11L, new Product(11L, "Taza", "Taza de cerámica personalizada", 12.0, ProductType.OTHERS));
-        products.put(12L, new Product(12L, "Agenda 2024", "Agenda de cuero con calendario 2024", 25.0, ProductType.OTHERS));
-        products.put(13L, new Product(13L, "Bolígrafo", "Bolígrafo Parker con tinta azul", 15.0, ProductType.OTHERS));
-        products.put(14L, new Product(14L, "Gafas de Sol", "Gafas de sol Ray-Ban modelo aviador", 150.0, ProductType.OTHERS));
-        products.put(15L, new Product(15L, "Botella de Agua", "Botella de agua reutilizable de acero inoxidable", 20.0, ProductType.OTHERS));
+        products.put(11L, new Product(11L, "Taza", "Taza de cerámica personalizada", new BigDecimal(12), ProductType.OTHERS));
+        products.put(12L, new Product(12L, "Agenda 2024", "Agenda de cuero con calendario 2024", new BigDecimal(25), ProductType.OTHERS));
+        products.put(13L, new Product(13L, "Bolígrafo", "Bolígrafo Parker con tinta azul", new BigDecimal(15), ProductType.OTHERS));
+        products.put(14L, new Product(14L, "Gafas de Sol", "Gafas de sol Ray-Ban modelo aviador", new BigDecimal(150), ProductType.OTHERS));
+        products.put(15L, new Product(15L, "Botella de Agua", "Botella de agua reutilizable de acero inoxidable", new BigDecimal(20), ProductType.OTHERS));
 
         ShoppingCart shoppingCart1 = new ShoppingCart(1L, john);
         shoppingCart1.addToCart(products.get(1L), 1);
@@ -57,24 +58,25 @@ public class Main {
         shoppingCart4.addToCart(products.get(15L), 3);
 
 
+        // todo llevar estos calculos como metodos del carrito
         System.out.println("1. Calculate and Print all products with price > 100 and product type is library");
         shoppingCart4.getCartItems().stream().map(CartItem::getProduct)
-                .filter(product -> product.getPrice() > 100.0)
+                .filter(product -> product.getPrice().compareTo(new BigDecimal(100)) > 0)
                 .filter(product -> product.getType().equals(ProductType.LIBRARY))
                 .forEach(System.out::println);
 
 
         System.out.println("2. Calculate and Print sum(price) of all products");
-        System.out.printf("The total sum of all products is: %.2f%n", shoppingCart4.calculateTotal());
+        System.out.printf("The total sum of all products is: %.2f%n", shoppingCart4.getTotal());
 
         System.out.println("3. Calculate and Print sum(price) of all electronic products");
-        Double totalSumElectronics = shoppingCart4.getCartItems().stream()
+        BigDecimal totalSumElectronics = shoppingCart4.getCartItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getType().equals(ProductType.ELECTRONIC))
-                .map(cartItem -> cartItem.getProduct().getPrice() * cartItem.getQuantity())
-                .mapToDouble(Double::doubleValue)
-                .sum();
+                .map(CartItem::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         System.out.printf("The total sum of all electronic products is: %.2f%n", totalSumElectronics);
 
+        // todo la funcion de imprimir la podemos implementar en una clase separada
         System.out.println("4. Calculate and Print all information of the shopping cart ordered by price");
         shoppingCart4.print();
 
