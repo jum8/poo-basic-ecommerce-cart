@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) {
@@ -58,28 +60,22 @@ public class Main {
         shoppingCart4.addToCart(products.get(15L), 3);
 
 
-        // todo llevar estos calculos como metodos del carrito
         System.out.println("1. Calculate and Print all products with price > 100 and product type is library");
-        shoppingCart4.getCartItems().stream().map(CartItem::getProduct)
-                .filter(product -> product.getPrice().compareTo(new BigDecimal(100)) > 0)
-                .filter(product -> product.getType().equals(ProductType.LIBRARY))
-                .forEach(System.out::println);
-
+        List<Predicate<Product>> predicates = List.of(
+                product -> product.getPrice().compareTo(new BigDecimal(100)) > 0,
+                product -> product.getType().equals(ProductType.LIBRARY)
+        );
+        shoppingCart4.getProductsBy(predicates).forEach(System.out::println);
 
         System.out.println("2. Calculate and Print sum(price) of all products");
         System.out.printf("The total sum of all products is: %.2f%n", shoppingCart4.getTotal());
 
         System.out.println("3. Calculate and Print sum(price) of all electronic products");
-        BigDecimal totalSumElectronics = shoppingCart4.getCartItems().stream()
-                .filter(cartItem -> cartItem.getProduct().getType().equals(ProductType.ELECTRONIC))
-                .map(CartItem::getTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalSumElectronics = shoppingCart4.getTotalOfProductType(ProductType.ELECTRONIC);
         System.out.printf("The total sum of all electronic products is: %.2f%n", totalSumElectronics);
 
-        // todo la funcion de imprimir la podemos implementar en una clase separada
         System.out.println("4. Calculate and Print all information of the shopping cart ordered by price");
-        shoppingCart4.print();
-
+        Printer.print(shoppingCart4);
 
     }
 }

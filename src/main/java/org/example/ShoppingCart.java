@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class ShoppingCart {
@@ -13,7 +15,7 @@ public class ShoppingCart {
     private List<CartItem> cartItems;
 
     public ShoppingCart(Long id, Customer customer) {
-        if(Objects.isNull(customer)) throw new IllegalArgumentException("Customer cannot be null");
+        if (Objects.isNull(customer)) throw new IllegalArgumentException("Customer cannot be null");
         this.id = id;
         this.customer = customer;
         this.shoppingCartStatus = ShoppingCartStatus.DRAFT;
@@ -22,6 +24,10 @@ public class ShoppingCart {
 
     public List<CartItem> getCartItems() {
         return cartItems;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void submit() {
@@ -33,22 +39,22 @@ public class ShoppingCart {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public BigDecimal getTotalOfProductType(ProductType type) {
+        return cartItems.stream().filter(cartItem -> cartItem.getProduct().getType().equals(type))
+                .map(CartItem::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public void addToCart(Product product, Integer quantity) {
         cartItems.add(new CartItem(product, quantity));
     }
 
-    public void print() {
-        System.out.println("Cart ID | ID | PRODUCT TYPE | PRODUCT NAME | PRICE");
-        cartItems.stream()
-                .sorted((item1, item2) -> item1.getProduct().getPrice().compareTo(item2.getProduct().getPrice()))
-                .map(item -> id +
-                        " | " + item.getProduct().getId() +
-                        " | " + item.getProduct().getType() +
-                        " | " + item.getProduct().getName() +
-                        " | " + item.getProduct().getPrice())
-                .forEach(System.out::println);
-    }
 
+    public List<Product> getProductsBy(List<Predicate<Product>> predicates) {
+        return cartItems.stream().map(CartItem::getProduct)
+                .filter(predicates.stream().reduce(p -> true, Predicate::and))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -62,4 +68,5 @@ public class ShoppingCart {
     public int hashCode() {
         return Objects.hash(id, customer, shoppingCartStatus, cartItems);
     }
+
 }

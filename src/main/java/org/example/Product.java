@@ -3,7 +3,7 @@ package org.example;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class Product {
+public class Product implements Comparable<Product> {
     private Long id;
     private String name;
     private String description;
@@ -52,6 +52,8 @@ public class Product {
     }
 
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,5 +65,11 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, price, type);
+    }
+
+
+    @Override
+    public int compareTo(Product o) {
+        return this.price.subtract(o.getPrice()).intValue();
     }
 }
