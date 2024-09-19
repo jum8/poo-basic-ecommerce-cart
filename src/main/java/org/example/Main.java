@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) {
-        Customer john = new Customer(1L, "John", "Smith", LocalDate.parse("1980-01-01"), "js@mail.com", "03417143334");
+        Customer john = new Customer.Builder().id(1L).name("John").lastName("Smith").birthDate(LocalDate.parse("1980-01-01")).email("js@mail.com").phone("03417143334").build();
 
         Map<Long, Product> products = new HashMap<>();
 
